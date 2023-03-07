@@ -1,6 +1,8 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import { nanoid } from 'nanoid';
+import PropTypes from 'prop-types';
+import { FormField, Form, ErrorMessage } from './ContactForm.styled';
 
 const FormSchema = Yup.object().shape({
   name: Yup.string()
@@ -17,27 +19,30 @@ export const ContactForm = ({ onSave }) => {
         number: 0,
       }}
       validationSchema={FormSchema}
-      onSubmit={values => {
-        console.log(values);
+      onSubmit={(values, actions) => {
         onSave({
           ...values,
           id: nanoid(),
         });
+        actions.resetForm();
       }}
     >
       <Form>
-        <label>
+        <FormField>
           Name
           <Field name="name" />
           <ErrorMessage name="name" component="div" />
-        </label>
-        <label>
+        </FormField>
+        <FormField>
           Number
           <Field type="tel" name="number" />
           <ErrorMessage name="number" component="div" />
-        </label>
+        </FormField>
         <button type="submit">Add contact</button>
       </Form>
     </Formik>
   );
+};
+ContactForm.propTypes = {
+  onSave: PropTypes.func.isRequired,
 };

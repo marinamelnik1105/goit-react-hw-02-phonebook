@@ -1,7 +1,11 @@
 import { Component } from "react";
 import { ContactForm } from "./ContactForm/ContactForm";
-import { ContactList } from "./ContactList/ContactList";
+import ContactList from "./ContactList/ContactList";
+import { Filter } from "./Filter/Filter";
+import { GlobalStyle } from "./GlobalStyle.styled";
+import { Layout } from "./Layout.styled";
 export class App extends Component
+
 {
 state = {
   contacts: [{id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
@@ -17,18 +21,39 @@ state = {
       return {
       contacts: [...prevState.contacts, newContacts]}
     })
+    
   }
-  render()
-  {return (
-    <div>
+  deleteContacts = contactId =>
+  {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
+    }));
+  };
+  changeFilter = (e) =>
+  {
+    this.setState({ filter: e.target.value })
+  }
+  getVisibleContacts = () =>
+  {
+    const { contacts, filter } = this.state;
+    const normalizedFilter = filter.toLowerCase();
+    return contacts.filter(contact => contact.name.toLowerCase().includes(normalizedFilter));
+  }
+  render(){
+    const {  filter } = this.state;
+    
+    const visibleContacts = this.getVisibleContacts();
+  return (
+    <Layout>
+      <GlobalStyle/>
       <h1>Phonebook</h1>
       <ContactForm onSave={this.addContacts} />
       <h2>Contacts</h2>
-      <ul>
-        <ContactList contacts={this.state.contacts}/>
-      </ul>
-    </div>
+      <Filter FilterValue={filter} onChange={this.changeFilter} />
+      <ContactList contacts={visibleContacts} onDeleteContact={this.deleteContacts} />  
+      
+    </Layout>
   );
   }
   
-};
+}
